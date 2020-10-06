@@ -37,7 +37,7 @@ train_dates = {
     'G9': '2020-10-06' 
 }
 
-C_files = {
+files = {
     './datasets/C/C1_trains.json': '2020-10-07', 
     './datasets/C/C2_trains.json': '2020-10-07', 
     './datasets/C/C3_trains.json': '2020-10-07', 
@@ -46,9 +46,6 @@ C_files = {
     './datasets/C/C7_trains.json': '2020-10-06',
     './datasets/C/C8_trains.json': '2020-10-07',
     './datasets/C/C9_trains.json': '2020-10-07',
-}
-
-D_files = {
     './datasets/D/D0_trains.json': '2020-10-09',
     './datasets/D/D1_trains.json': '2020-10-09',
     './datasets/D/D2_trains.json': '2020-10-07',
@@ -59,9 +56,6 @@ D_files = {
     './datasets/D/D7_trains.json': '2020-10-06',
     './datasets/D/D8_trains.json': '2020-10-06',
     './datasets/D/D9_trains.json': '2020-10-07',
-}
-
-G_files = {
     './datasets/G/G1_trains.json': '2020-10-06',
     './datasets/G/G2_trains.json': '2020-10-06',
     './datasets/G/G3_trains.json': '2020-10-06',
@@ -70,7 +64,7 @@ G_files = {
     './datasets/G/G6_trains.json': '2020-10-06',
     './datasets/G/G7_trains.json': '2020-10-06',
     './datasets/G/G8_trains.json': '2020-10-06',
-    './datasets/G/G9_trains.json': '2020-10-06'
+    './datasets/G/G9_trains.json': '2020-10-06',
 }
 
 def getSchedule(train_no, train_date):
@@ -88,43 +82,42 @@ def getSchedule(train_no, train_date):
         return []    
 
 if __name__ == "__main__":
-    files = C_files
+    fp = sys.argv[1]
+    train_date = files[fp]
 
-    for fp in files:
-        train_date = files[fp]
-        schedules = {}
-        errors = []
-        with open(fp) as f:
-            start = datetime.datetime.now()
-            trains = json.load(f)['data']
-            n_trains = len(trains)
-            for i, t in enumerate(trains):
-                train_no = t['train_no']
-                train_code = t['station_train_code']
-                # print(str(i) + '/' + str(n_trains) + ' Getting ' + train_no)
-                schedules[train_no] = getSchedule(train_no, train_date)
-                if len(schedules[train_no]) == 0:
-                    errors.append((train_no, train_code))
-                time.sleep(0.01)
-        
-            # print('Retraining errors')
-            errors_copy = errors.copy()
-            n_trains = len(errors_copy)
-            for i, t in enumerate(errors_copy):
-                train_no, train_code = t
-                # print(str(i) + '/' + str(n_trains) + ' Getting ' + train_no)
-                schedules[train_no] = {
-                    'schedule': getSchedule(train_no, train_date),
-                    'train_code': train_code
-                }
-                time.sleep(0.01)
-            # print(schedules)
-            end = datetime.datetime.now()
-            print(fp + " Used Time: " + str(end-start))
+    schedules = {}
+    errors = []
+    with open(fp) as f:
+        start = datetime.datetime.now()
+        trains = json.load(f)['data']
+        n_trains = len(trains)
+        for i, t in enumerate(trains):
+            train_no = t['train_no']
+            train_code = t['station_train_code']
+            # print(str(i) + '/' + str(n_trains) + ' Getting ' + train_no)
+            schedules[train_no] = getSchedule(train_no, train_date)
+            if len(schedules[train_no]) == 0:
+                errors.append((train_no, train_code))
+            time.sleep(0.01)
+    
+        # print('Retraining errors')
+        errors_copy = errors.copy()
+        n_trains = len(errors_copy)
+        for i, t in enumerate(errors_copy):
+            train_no, train_code = t
+            # print(str(i) + '/' + str(n_trains) + ' Getting ' + train_no)
+            schedules[train_no] = {
+                'schedule': getSchedule(train_no, train_date),
+                'train_code': train_code
+            }
+            time.sleep(0.01)
+        # print(schedules)
+        end = datetime.datetime.now()
+        print(fp + " Used Time: " + str(end-start))
 
-        outfile = fp.replace('datasets', 'outfiles')
-        with open(outfile, 'w', encoding='utf8') as outfile:
-            json.dump(schedules, outfile, ensure_ascii=False)
+    outfile = fp.replace('datasets', 'outfiles')
+    with open(outfile, 'w', encoding='utf8') as outfile:
+        json.dump(schedules, outfile, ensure_ascii=False)
     
 
 

@@ -1,0 +1,14 @@
+{
+    "data": [
+        {
+            "date": "20201009",
+            "from_station": "海口",
+            "station_train_code": "D083",
+            "to_station": "三亚",
+            "total_num": "10",
+            "train_no": "6b0000D08300"
+        }
+    ],
+    "status": true,
+    "errorMsg": ""
+}
